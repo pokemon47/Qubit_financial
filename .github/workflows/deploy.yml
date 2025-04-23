@@ -15,7 +15,9 @@ jobs:
       with:
         key: ${{ secrets.DROPLET_SSH_KEY }}
         name: deploy_key
-        known_hosts: github.com,170.64.162.86
+        known_hosts: |
+          github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl
+          ${{ secrets.DROPLET_HOST }} ssh-ed25519 SHA256:jw9oSeeiS/kZTdDHaz2oUl79OJbz3J668Kb0NIMGa50
     
     - name: Setup SSH Config
       run: |
@@ -25,10 +27,12 @@ jobs:
             HostName github.com
             User git
             IdentityFile ~/.ssh/deploy_key
+            StrictHostKeyChecking yes
         Host ${{ secrets.DROPLET_HOST }}
             HostName ${{ secrets.DROPLET_HOST }}
             User ${{ secrets.DROPLET_USERNAME }}
             IdentityFile ~/.ssh/deploy_key
+            StrictHostKeyChecking yes
         EOL
         chmod 600 ~/.ssh/config
     
@@ -36,6 +40,7 @@ jobs:
       run: |
         ls -la ~/.ssh
         cat ~/.ssh/config
+        cat ~/.ssh/known_hosts
         ssh -v ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} echo "SSH connection test"
     
     - name: Deploy to Droplet
