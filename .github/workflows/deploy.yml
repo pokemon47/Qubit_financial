@@ -17,6 +17,12 @@ jobs:
         name: deploy_key
         known_hosts: github.com,170.64.162.86
     
+    - name: Debug SSH Setup
+      run: |
+        ls -la ~/.ssh
+        cat ~/.ssh/config
+        ssh -v deployer@${{ secrets.DROPLET_HOST }} echo "SSH connection test"
+    
     - name: Deploy to Droplet
       uses: appleboy/ssh-action@master
       with:
