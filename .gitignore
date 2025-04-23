@@ -7,7 +7,7 @@
 .env
 __pycache__/
 *.pyc
-*_venv/
+*venv/
 deploy.sh
 *.sh
 
