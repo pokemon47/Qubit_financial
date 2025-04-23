@@ -16,8 +16,16 @@ jobs:
         echo "${{ secrets.DROPLET_SSH_KEY }}" > ~/.ssh/deploy_key
         chmod 600 ~/.ssh/deploy_key
         ssh-keygen -y -f ~/.ssh/deploy_key > ~/.ssh/deploy_key.pub
+        
+        # Remove any existing entry for the droplet
+        ssh-keygen -f ~/.ssh/known_hosts -R "${{ secrets.DROPLET_HOST }}" || true
+        
+        # Add GitHub's host key
         echo "github.com,140.82.121.3 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl" > ~/.ssh/known_hosts
-        echo "${{ secrets.DROPLET_HOST }} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl" >> ~/.ssh/known_hosts
+        
+        # Fetch and add the droplet's current host key
+        ssh-keyscan -H "${{ secrets.DROPLET_HOST }}" >> ~/.ssh/known_hosts
+        
         chmod 644 ~/.ssh/known_hosts
     
     - name: Setup SSH Config
