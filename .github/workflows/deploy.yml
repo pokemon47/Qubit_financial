@@ -59,8 +59,9 @@ jobs:
         username: ${{ secrets.DROPLET_USERNAME }}
         key: ${{ secrets.DROPLET_SSH_KEY }}
         script: |
-          cd /home/deployer/financial_score
-          git pull origin main
+          cd /home/deployer/Qubit_financial
+          git fetch origin
+          git reset --hard origin/main
           source venv/bin/activate
           pip install -r requirements.txt
           pkill gunicorn
