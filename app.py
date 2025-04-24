@@ -9,6 +9,15 @@ load_dotenv()
 app = Flask(__name__)
 PORT = int(os.getenv('PORT', 5000))
 
+# Define allowed origins
+allowed_origins = [
+    "http://localhost:3000",                   # local dev
+    "https://your-frontend.vercel.app"         # TODO WHEN WE DEPLOY, replace with your deployed frontend domain
+]
+
+# Enable CORS for allowed origins only
+CORS(app, origins=allowed_origins)
+
 @app.route('/status', methods=['GET'])
 def status():
     return jsonify({
