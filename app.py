@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from functions_NEW import run_financial_analysis, log_error
 import os
 from dotenv import load_dotenv
