@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from functions_NEW import run_financial_analysis, log_error
+from functions_NEW import run_financial_analysis, log_error, fetch_main_company_financials
 import os
 from dotenv import load_dotenv
 
@@ -38,9 +38,18 @@ def get_financial_score():
         }), 400
     
     try:
+        # Get company financials
+        financials = fetch_main_company_financials(ticker)
+        if financials is None:
+            print(f"[ERROR] Could not fetch financial data for {ticker}")
+            log_error("api", f"Could not fetch financial data for {ticker}", {"ticker": ticker})
+            return jsonify({
+                "error": f"Could not fetch financial data for {ticker}"
+            }), 404
+
         # Run the financial analysis
-        result = run_financial_analysis(ticker)
-        if result is None:
+        score = run_financial_analysis(ticker)
+        if score is None:
             print(f"[ERROR] Could not calculate financial score for {ticker}")
             log_error("api", f"Could not calculate financial score for {ticker}", {"ticker": ticker})
             return jsonify({
@@ -49,7 +58,10 @@ def get_financial_score():
             
         return jsonify({
             "ticker": ticker,
-            "score": result
+            "score": score,
+            "revenue_growth": financials['Revenue Growth (%)'],
+            "net_profit_margin": financials['Net Profit Margin (%)'],
+            "free_cash_flow": financials['Free Cash Flow (M)']
         }), 200
     except Exception as e:
         print(f"[ERROR] Unexpected error processing request for {ticker}: {str(e)}")
